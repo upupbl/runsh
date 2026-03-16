@@ -16,6 +16,8 @@
 
     /* Hero */
     .hero { text-align: center; margin-bottom: 48px; }
+    .logo-wrap { display: flex; align-items: center; justify-content: center; gap: 16px; }
+    .logo-icon { width: 54px; height: 54px; flex-shrink: 0; }
     .logo { font-size: 2.8rem; font-weight: 700; letter-spacing: -1px; background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .logo span { -webkit-text-fill-color: #555; }
     .tagline { margin-top: 10px; color: var(--muted); font-size: 0.8rem; letter-spacing: 2.5px; text-transform: uppercase; }
@@ -113,7 +115,20 @@
 <body>
 
 <div class="hero">
-  <div class="logo">run<span>sh</span>.de</div>
+  <div class="logo-wrap">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" class="logo-icon" aria-hidden="true">
+      <defs>
+        <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#00e5ff"/>
+          <stop offset="100%" stop-color="#7c4dff"/>
+        </linearGradient>
+      </defs>
+      <polygon points="56,30 43,8 17,8 4,30 17,52 43,52" fill="url(#logo-grad)" opacity="0.08"/>
+      <polygon points="56,30 43,8 17,8 4,30 17,52 43,52" fill="none" stroke="url(#logo-grad)" stroke-width="1.5" stroke-linejoin="round"/>
+      <text x="30" y="36" text-anchor="middle" fill="url(#logo-grad)" font-family="'SF Mono','Fira Code','Cascadia Code',monospace" font-size="17" font-weight="700">&gt;_</text>
+    </svg>
+    <div class="logo">run<span>sh</span>.de</div>
+  </div>
   <div class="tagline">Shell scripts, ready to run</div>
   <div class="stats">
     <span>39 scripts</span><span>·</span>

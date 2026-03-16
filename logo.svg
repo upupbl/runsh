@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00e5ff"/>
+      <stop offset="100%" stop-color="#7c4dff"/>
+    </linearGradient>
+  </defs>
+  <polygon points="56,30 43,8 17,8 4,30 17,52 43,52" fill="url(#g)" opacity="0.08"/>
+  <polygon points="56,30 43,8 17,8 4,30 17,52 43,52" fill="none" stroke="url(#g)" stroke-width="1.5" stroke-linejoin="round"/>
+  <text x="30" y="36" text-anchor="middle" fill="url(#g)" font-family="'SF Mono','Fira Code','Cascadia Code',monospace" font-size="17" font-weight="700">&gt;_</text>
+</svg>
