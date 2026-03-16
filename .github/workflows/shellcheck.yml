@@ -1,0 +1,43 @@
+name: ShellCheck
+
+on:
+  push:
+    paths:
+      - '**.sh'
+  pull_request:
+    paths:
+      - '**.sh'
+
+jobs:
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Run ShellCheck
+        run: |
+          echo "## ShellCheck Results" >> $GITHUB_STEP_SUMMARY
+          ERRORS=0
+          for f in *.sh; do
+            echo "### $f" >> $GITHUB_STEP_SUMMARY
+            if shellcheck --severity=warning \
+                --exclude=SC1090,SC1091,SC2034,SC2086 \
+                "$f" 2>&1 | tee /tmp/sc_out.txt; then
+              echo "✅ No issues" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+              cat /tmp/sc_out.txt >> $GITHUB_STEP_SUMMARY
+              echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+              ERRORS=$((ERRORS + 1))
+            fi
+          done
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "**$ERRORS script(s) with warnings**" >> $GITHUB_STEP_SUMMARY
+          # Warn but don't fail the build
+          exit 0

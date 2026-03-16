@@ -20,6 +20,8 @@
     .logo span { -webkit-text-fill-color: #333; }
     .tagline { margin-top: 10px; color: var(--muted); font-size: 0.8rem; letter-spacing: 2.5px; text-transform: uppercase; }
     .stats { margin-top: 18px; display: flex; gap: 20px; justify-content: center; font-size: 0.72rem; color: var(--dim); flex-wrap: wrap; }
+    .terminal-hint { font-size: 0.72rem; color: #333; margin-top: 12px; }
+    .terminal-hint code { color: #555; }
 
     /* Search */
     .search-wrap { width: 100%; max-width: 820px; margin-bottom: 36px; position: relative; }
@@ -53,7 +55,7 @@
 
     /* Card bottom */
     .card-bottom { padding: 0 17px 15px; }
-    .cmd { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 8px 11px; font-size: 0.74rem; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: border-color 0.15s; }
+    .cmd { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 8px 11px; font-size: 0.74rem; display: flex; align-items: center; gap: 6px; transition: border-color 0.15s; }
     .cmd:hover { border-color: #00e5ff20; }
     .prompt { color: var(--dim); flex-shrink: 0; }
     .cmd-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #777; }
@@ -61,8 +63,17 @@
     .copy-btn { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 0.67rem; font-family: inherit; padding: 2px 5px; border-radius: 4px; flex-shrink: 0; transition: color 0.15s; }
     .copy-btn:hover { color: #777; }
     .copy-btn.copied { color: var(--green); }
+    .view-src-btn { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 0.67rem; font-family: inherit; padding: 2px 5px; border-radius: 4px; flex-shrink: 0; transition: color 0.15s; }
+    .view-src-btn:hover { color: #777; }
     .env-hint { font-size: 0.66rem; color: var(--dim); margin-top: 6px; padding-left: 2px; }
     .env-hint code { color: var(--purple); }
+
+    /* Env var inputs */
+    .env-inputs { margin-top: 7px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .env-input-group { display: flex; flex-direction: column; gap: 2px; }
+    .env-input-label { font-size: 0.6rem; color: var(--dim); letter-spacing: 0.5px; }
+    .env-input-field { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 3px 7px; font-size: 0.68rem; font-family: inherit; color: var(--purple); width: auto; min-width: 80px; max-width: 160px; outline: none; transition: border-color 0.15s; }
+    .env-input-field:focus { border-color: var(--border2); }
 
     /* Expandable */
     .details { display: none; margin-top: 11px; border-top: 1px solid var(--border); padding-top: 11px; }
@@ -80,6 +91,23 @@
     footer { margin-top: auto; padding-top: 40px; color: var(--dim); font-size: 0.7rem; text-align: center; line-height: 2; }
     footer a { color: var(--muted); text-decoration: none; }
     footer a:hover { color: var(--purple); }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: #111; border: 1px solid var(--border2); border-radius: 12px; width: 100%; max-width: 760px; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--border); gap: 10px; }
+    .modal-title { font-size: 0.8rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .modal-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+    .modal-copy-btn { background: none; border: 1px solid var(--border2); color: var(--dim); cursor: pointer; font-size: 0.67rem; font-family: inherit; padding: 4px 10px; border-radius: 5px; transition: color 0.15s, border-color 0.15s; }
+    .modal-copy-btn:hover { color: #aaa; border-color: #444; }
+    .modal-copy-btn.copied { color: var(--green); border-color: var(--green); }
+    .modal-close { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 1rem; font-family: inherit; padding: 2px 6px; border-radius: 4px; line-height: 1; transition: color 0.15s; }
+    .modal-close:hover { color: #aaa; }
+    .modal-body { overflow-y: auto; padding: 18px; flex: 1; }
+    .modal-loading { color: var(--muted); font-size: 0.8rem; text-align: center; padding: 40px 0; }
+    .modal-error { color: var(--red); font-size: 0.8rem; text-align: center; padding: 40px 0; }
+    .modal-code { font-size: 0.75rem; line-height: 1.6; color: #aaa; white-space: pre; font-family: 'SF Mono','Fira Code','Cascadia Code',monospace; }
   </style>
 </head>
 <body>
@@ -88,11 +116,12 @@
   <div class="logo">run<span>sh</span>.de</div>
   <div class="tagline">Shell scripts, ready to run</div>
   <div class="stats">
-    <span>30 scripts</span><span>·</span>
+    <span>39 scripts</span><span>·</span>
     <span>Ubuntu / Debian</span><span>·</span>
     <span>MIT License</span><span>·</span>
     <a href="https://github.com/upupbl/runsh" target="_blank">GitHub</a>
   </div>
+  <div class="terminal-hint">terminal menu: <code>bash &lt;(curl -sL runsh.de/menu.sh)</code></div>
 </div>
 
 <div class="search-wrap">
@@ -113,7 +142,7 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/init.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/init.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('init')">source</button></div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>apt-get update &amp; install: curl wget git vim htop unzip net-tools ufw</li><li>Set timezone to Asia/Shanghai</li><li>UFW: deny incoming, allow SSH, enable</li></ul></div>
       </div>
     </div>
@@ -127,7 +156,7 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/update.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/update.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('update')">source</button></div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>apt-get update + upgrade (non-interactive)</li><li>autoremove, autoclean, clean</li><li>journalctl vacuum (keep 7 days)</li><li>Reports disk free and reboot requirement</li></ul></div>
       </div>
     </div>
@@ -141,8 +170,11 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/swap.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/swap.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('swap')">source</button></div>
         <div class="env-hint">custom size: <code>SWAP_SIZE=4G</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/swap.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">SWAP_SIZE</label><input class="env-input-field" data-var="SWAP_SIZE" value="4G" /></div>
+        </div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Creates /swapfile via fallocate (dd fallback)</li><li>chmod 600, mkswap, swapon</li><li>Appends to /etc/fstab for persistence</li><li>Sets vm.swappiness=10</li></ul></div>
       </div>
     </div>
@@ -156,7 +188,7 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/bbr.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/bbr.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('bbr')">source</button></div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Checks kernel version ≥ 4.9</li><li>modprobe tcp_bbr</li><li>Sets net.core.default_qdisc=fq</li><li>Sets net.ipv4.tcp_congestion_control=bbr</li><li>Persists via /etc/sysctl.conf</li></ul></div>
       </div>
     </div>
@@ -170,7 +202,7 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/info.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/info.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('info')">source</button></div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>OS, kernel, hostname, uptime</li><li>CPU model, cores, load average</li><li>Memory &amp; swap usage</li><li>Disk usage per mount</li><li>Network interfaces + public IP</li><li>Docker version &amp; running containers</li></ul></div>
       </div>
     </div>
@@ -184,7 +216,7 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/bench.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/bench.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('bench')">source</button></div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>CPU: Python prime benchmark</li><li>Disk write: dd 512MB with fdatasync</li><li>Disk read: dd 512MB</li><li>Network: 100MB download from Tokyo / LA</li></ul></div>
       </div>
     </div>
@@ -198,7 +230,7 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/cleanup.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/cleanup.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('cleanup')">source</button></div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>apt autoremove, autoclean, clean</li><li>journalctl vacuum (keep 7 days)</li><li>Deletes /var/log/*.gz &gt;30 days</li><li>Deletes /tmp files not accessed in 3 days</li><li>docker system prune -f (if installed)</li><li>Lists top 10 large files in /var and /tmp</li></ul></div>
       </div>
     </div>
@@ -220,7 +252,7 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/ssh-harden.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/ssh-harden.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('ssh-harden')">source</button></div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Verifies SSH key exists before proceeding</li><li>Backs up sshd_config</li><li>Port=22222, PermitRootLogin=no, PasswordAuthentication=no</li><li>MaxAuthTries=3, X11Forwarding=no</li><li>Updates UFW if installed</li></ul><div class="warn-note">⚠ Ensure key auth works first. Test in a new terminal after!</div></div>
       </div>
     </div>
@@ -234,8 +266,11 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/ufw.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/ufw.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('ufw')">source</button></div>
         <div class="env-hint">custom SSH port: <code>SSH_PORT=22222</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/ufw.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">SSH_PORT</label><input class="env-input-field" data-var="SSH_PORT" value="22222" /></div>
+        </div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>ufw reset → deny incoming → allow outgoing</li><li>Allow SSH (22), HTTP (80), HTTPS (443)</li><li>ufw enable, shows final rules</li></ul></div>
       </div>
     </div>
@@ -249,7 +284,7 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/fail2ban.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/fail2ban.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('fail2ban')">source</button></div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Installs fail2ban</li><li>SSH jail: maxretry=3, bantime=3600s</li><li>Nginx jails if Nginx is installed</li><li>Enables fail2ban service</li></ul></div>
       </div>
     </div>
@@ -271,8 +306,11 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/wireguard.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/wireguard.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('wireguard')">source</button></div>
         <div class="env-hint">custom port: <code>WG_PORT=51820</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/wireguard.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">WG_PORT</label><input class="env-input-field" data-var="WG_PORT" value="51820" /></div>
+        </div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>apt install wireguard</li><li>Generates server &amp; client keypairs + PSK</li><li>Writes /etc/wireguard/wg0.conf</li><li>Enables IP forwarding + iptables NAT</li><li>Outputs client1.conf ready to import</li></ul></div>
       </div>
     </div>
@@ -286,7 +324,7 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/caddy.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/caddy.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('caddy')">source</button></div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Adds official Caddy apt repository</li><li>Installs caddy, enables service</li><li>Writes minimal Caddyfile with gzip</li><li>UFW allow 80 + 443</li></ul></div>
       </div>
     </div>
@@ -300,9 +338,27 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">FRP_MODE</span>=server curl -sL runsh.de/frp.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">FRP_MODE</span>=server curl -sL runsh.de/frp.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('frp')">source</button></div>
         <div class="env-hint">client: <code>FRP_MODE=client FRP_SERVER=ip FRP_TOKEN=secret</code></div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Downloads frp binary from GitHub releases</li><li>Server: writes frps.toml, creates systemd service</li><li>Client: writes frpc.toml with SSH proxy, creates systemd service</li><li>Auto-generates token if not provided</li></ul></div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="tailscale vpn mesh network peer">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ic">🔗</div>
+        <div class="card-body">
+          <div class="card-header-row"><div class="card-name">tailscale</div><div class="badges"><span class="badge badge-root">root</span></div><span class="expand-icon">▼</span></div>
+          <div class="card-desc">Mesh VPN — just install on each device and they're connected. No server needed.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/tailscale.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('tailscale')">source</button></div>
+        <div class="env-hint"><code>TS_AUTHKEY=tskey-auth-xxx</code> (optional)</div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/tailscale.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">TS_AUTHKEY</label><input class="env-input-field" data-var="TS_AUTHKEY" placeholder="tskey-auth-xxx" /></div>
+        </div>
+        <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Installs via tailscale.com/install.sh</li><li>Enables IP forwarding</li><li>Run tailscale up to authenticate</li></ul></div>
       </div>
     </div>
 
@@ -323,7 +379,7 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/docker.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/docker.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('docker')">source</button></div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Removes old docker.io packages</li><li>Adds official Docker GPG key + apt repo</li><li>Installs docker-ce, cli, containerd, buildx, compose</li><li>Adds current user to docker group</li></ul></div>
       </div>
     </div>
@@ -337,8 +393,11 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/node.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/node.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('node')">source</button></div>
         <div class="env-hint">version: <code>NODE_VERSION=20</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/node.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">NODE_VERSION</label><input class="env-input-field" data-var="NODE_VERSION" value="20" /></div>
+        </div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Installs nvm via official script</li><li>Adds nvm init to .bashrc and .zshrc</li><li>nvm install + nvm alias default</li></ul></div>
       </div>
     </div>
@@ -352,8 +411,11 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/python.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/python.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('python')">source</button></div>
         <div class="env-hint">version: <code>PYTHON_VERSION=3.12</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/python.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">PYTHON_VERSION</label><input class="env-input-field" data-var="PYTHON_VERSION" value="3.12" /></div>
+        </div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Installs build dependencies</li><li>Installs pyenv via pyenv.run</li><li>Adds pyenv init to .bashrc and .zshrc</li><li>pyenv install + pyenv global + pip upgrade</li></ul></div>
       </div>
     </div>
@@ -367,8 +429,11 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/go.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/go.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('go')">source</button></div>
         <div class="env-hint">version: <code>GO_VERSION=1.23</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/go.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">GO_VERSION</label><input class="env-input-field" data-var="GO_VERSION" value="1.23" /></div>
+        </div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Fetches latest version from go.dev (or uses GO_VERSION)</li><li>Downloads official tarball, extracts to /usr/local/go</li><li>Adds GOPATH + PATH to .bashrc and .zshrc</li></ul></div>
       </div>
     </div>
@@ -382,7 +447,7 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/rust.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/rust.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('rust')">source</button></div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>apt install build-essential gcc</li><li>curl sh.rustup.rs | sh -y</li><li>Adds cargo/env to .bashrc and .zshrc</li></ul></div>
       </div>
     </div>
@@ -396,8 +461,11 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/java.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/java.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('java')">source</button></div>
         <div class="env-hint">version: <code>JAVA_VERSION=17</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/java.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">JAVA_VERSION</label><input class="env-input-field" data-var="JAVA_VERSION" value="17" /></div>
+        </div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>apt install openjdk-21-jdk</li><li>Sets JAVA_HOME in .bashrc/.zshrc</li></ul></div>
       </div>
     </div>
@@ -411,8 +479,11 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/php.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/php.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('php')">source</button></div>
         <div class="env-hint">version: <code>PHP_VERSION=8.2</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/php.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">PHP_VERSION</label><input class="env-input-field" data-var="PHP_VERSION" value="8.2" /></div>
+        </div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Adds ondrej/php PPA for latest versions</li><li>Installs php-fpm, curl, mbstring, xml, zip, gd, mysql, pgsql, redis, opcache</li><li>Installs Composer globally</li></ul></div>
       </div>
     </div>
@@ -426,7 +497,7 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/zsh.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/zsh.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('zsh')">source</button></div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>apt install zsh</li><li>Installs oh-my-zsh (RUNZSH=no)</li><li>Clones autosuggestions + syntax-highlighting</li><li>Sets zsh as default shell via chsh</li></ul></div>
       </div>
     </div>
@@ -440,7 +511,7 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/nginx.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/nginx.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('nginx')">source</button></div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>apt install nginx, enable + start</li><li>worker_processes = nproc</li><li>gzip on for text/css/js/json/svg</li><li>server_tokens off</li><li>UFW allow 'Nginx Full'</li></ul></div>
       </div>
     </div>
@@ -454,7 +525,7 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">DOMAIN</span>=example.com EMAIL=x@x.com curl -sL runsh.de/cert.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">DOMAIN</span>=example.com EMAIL=x@x.com curl -sL runsh.de/cert.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('cert')">source</button></div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Installs acme.sh</li><li>Issues cert (webroot or standalone mode)</li><li>Installs to /etc/ssl/&lt;domain&gt;/</li><li>Creates Nginx HTTP→HTTPS config</li><li>Auto-renewal via cron</li></ul></div>
       </div>
     </div>
@@ -476,8 +547,14 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/postgres.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/postgres.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('postgres')">source</button></div>
         <div class="env-hint"><code>PG_VERSION=16 PG_USER=myuser PG_PASS=secret PG_DB=mydb</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/postgres.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">PG_VERSION</label><input class="env-input-field" data-var="PG_VERSION" value="16" /></div>
+          <div class="env-input-group"><label class="env-input-label">PG_USER</label><input class="env-input-field" data-var="PG_USER" value="myuser" /></div>
+          <div class="env-input-group"><label class="env-input-label">PG_PASS</label><input class="env-input-field" data-var="PG_PASS" placeholder="secret" /></div>
+          <div class="env-input-group"><label class="env-input-label">PG_DB</label><input class="env-input-field" data-var="PG_DB" value="mydb" /></div>
+        </div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Adds official PostgreSQL apt repo</li><li>Installs postgresql-17</li><li>Creates user (default: dbuser) with random password</li><li>Creates database, grants all privileges</li><li>Prints connection info</li></ul></div>
       </div>
     </div>
@@ -491,8 +568,14 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/mysql.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/mysql.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('mysql')">source</button></div>
         <div class="env-hint">MariaDB: <code>USE_MARIADB=1</code> &nbsp;|&nbsp; <code>DB_USER DB_PASS DB_NAME</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/mysql.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">USE_MARIADB</label><input class="env-input-field" data-var="USE_MARIADB" placeholder="1" /></div>
+          <div class="env-input-group"><label class="env-input-label">DB_USER</label><input class="env-input-field" data-var="DB_USER" placeholder="myuser" /></div>
+          <div class="env-input-group"><label class="env-input-label">DB_PASS</label><input class="env-input-field" data-var="DB_PASS" placeholder="secret" /></div>
+          <div class="env-input-group"><label class="env-input-label">DB_NAME</label><input class="env-input-field" data-var="DB_NAME" placeholder="mydb" /></div>
+        </div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>apt install mysql-server (or mariadb-server)</li><li>Secures: removes test db, anonymous users</li><li>Sets root password</li><li>Creates user + database</li></ul></div>
       </div>
     </div>
@@ -506,8 +589,11 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/redis.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/redis.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('redis')">source</button></div>
         <div class="env-hint">with password: <code>REDIS_PASSWORD=secret</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/redis.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">REDIS_PASSWORD</label><input class="env-input-field" data-var="REDIS_PASSWORD" placeholder="secret" /></div>
+        </div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>apt install redis-server</li><li>Bind to 127.0.0.1 only</li><li>supervised=systemd, maxmemory-policy=allkeys-lru</li><li>Optional requirepass</li><li>Verifies with redis-cli ping</li></ul></div>
       </div>
     </div>
@@ -521,8 +607,13 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/mongodb.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/mongodb.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('mongodb')">source</button></div>
         <div class="env-hint"><code>MONGO_VERSION=7.0 MONGO_USER=myuser MONGO_DB=mydb</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/mongodb.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">MONGO_VERSION</label><input class="env-input-field" data-var="MONGO_VERSION" value="7.0" /></div>
+          <div class="env-input-group"><label class="env-input-label">MONGO_USER</label><input class="env-input-field" data-var="MONGO_USER" value="myuser" /></div>
+          <div class="env-input-group"><label class="env-input-label">MONGO_DB</label><input class="env-input-field" data-var="MONGO_DB" value="mydb" /></div>
+        </div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Adds official MongoDB apt repo</li><li>Installs mongodb-org</li><li>Creates user with readWrite role</li><li>Prints connection string</li></ul></div>
       </div>
     </div>
@@ -544,7 +635,7 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/netdata.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/netdata.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('netdata')">source</button></div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Installs via official kickstart.sh</li><li>Enables netdata service</li><li>Opens port 19999 in UFW</li><li>Dashboard at :19999</li></ul><div class="warn-note">⚠ Consider blocking port 19999 publicly and using SSH tunnel instead.</div></div>
       </div>
     </div>
@@ -558,8 +649,12 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/nezha.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/nezha.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('nezha')">source</button></div>
         <div class="env-hint">agent: <code>NZ_SERVER=ip:5555 NZ_KEY=yourkey</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/nezha.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">NZ_SERVER</label><input class="env-input-field" data-var="NZ_SERVER" placeholder="ip:5555" /></div>
+          <div class="env-input-group"><label class="env-input-label">NZ_KEY</label><input class="env-input-field" data-var="NZ_KEY" placeholder="yourkey" /></div>
+        </div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>No args: deploys Dashboard via Docker Compose (:8008)</li><li>With NZ_SERVER+NZ_KEY: installs agent</li><li>Agent connects to your dashboard automatically</li></ul></div>
       </div>
     </div>
@@ -573,9 +668,95 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/uptime-kuma.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/uptime-kuma.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('uptime-kuma')">source</button></div>
         <div class="env-hint">custom port: <code>PORT=3001</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/uptime-kuma.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">PORT</label><input class="env-input-field" data-var="PORT" value="3001" /></div>
+        </div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>docker run louislam/uptime-kuma</li><li>Persists data in Docker volume</li><li>Opens port in UFW</li><li>First visit: create admin account</li></ul></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SELF-HOSTED -->
+<div class="category" data-cat>
+  <div class="category-title">// self-hosted</div>
+  <div class="grid">
+
+    <div class="card" data-tags="vaultwarden bitwarden password manager docker">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ip">🔑</div>
+        <div class="card-body">
+          <div class="card-header-row"><div class="card-name">vaultwarden</div><div class="badges"><span class="badge badge-docker">docker</span></div><span class="expand-icon">▼</span></div>
+          <div class="card-desc">Self-hosted Bitwarden-compatible password manager.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/vaultwarden.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('vaultwarden')">source</button></div>
+        <div class="env-hint"><code>PORT=8080</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/vaultwarden.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">PORT</label><input class="env-input-field" data-var="PORT" value="8080" /></div>
+        </div>
+        <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>docker run vaultwarden/server</li><li>Saves admin token to /opt/vaultwarden/admin_token.txt</li><li>Accessible at :8080</li></ul></div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="nextcloud cloud storage docker mariadb google drive">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ic">☁</div>
+        <div class="card-body">
+          <div class="card-header-row"><div class="card-name">nextcloud</div><div class="badges"><span class="badge badge-docker">docker</span></div><span class="expand-icon">▼</span></div>
+          <div class="card-desc">Self-hosted cloud storage (Google Drive alternative). Docker Compose with MariaDB.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/nextcloud.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('nextcloud')">source</button></div>
+        <div class="env-hint"><code>PORT=8888 NC_ADMIN=admin NC_PASS=secret</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/nextcloud.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">PORT</label><input class="env-input-field" data-var="PORT" value="8888" /></div>
+          <div class="env-input-group"><label class="env-input-label">NC_ADMIN</label><input class="env-input-field" data-var="NC_ADMIN" value="admin" /></div>
+          <div class="env-input-group"><label class="env-input-label">NC_PASS</label><input class="env-input-field" data-var="NC_PASS" placeholder="secret" /></div>
+        </div>
+        <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>docker compose nextcloud + mariadb</li><li>Credentials saved to /opt/nextcloud/.credentials</li></ul></div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="n8n workflow automation docker self-hosted">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ig">🔧</div>
+        <div class="card-body">
+          <div class="card-header-row"><div class="card-name">n8n</div><div class="badges"><span class="badge badge-docker">docker</span></div><span class="expand-icon">▼</span></div>
+          <div class="card-desc">Self-hosted workflow automation. Connect apps and automate tasks visually.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/n8n.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('n8n')">source</button></div>
+        <div class="env-hint"><code>PORT=5678</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/n8n.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">PORT</label><input class="env-input-field" data-var="PORT" value="5678" /></div>
+        </div>
+        <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>docker run n8nio/n8n</li><li>Basic auth enabled</li><li>Timezone Asia/Shanghai</li></ul></div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="minio s3 storage object docker self-hosted">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon iy">🪣</div>
+        <div class="card-body">
+          <div class="card-header-row"><div class="card-name">minio</div><div class="badges"><span class="badge badge-docker">docker</span></div><span class="expand-icon">▼</span></div>
+          <div class="card-desc">Self-hosted S3-compatible object storage.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/minio.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('minio')">source</button></div>
+        <div class="env-hint"><code>API_PORT=9000 CONSOLE_PORT=9001</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/minio.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">API_PORT</label><input class="env-input-field" data-var="API_PORT" value="9000" /></div>
+          <div class="env-input-group"><label class="env-input-label">CONSOLE_PORT</label><input class="env-input-field" data-var="CONSOLE_PORT" value="9001" /></div>
+        </div>
+        <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>docker run minio/minio</li><li>S3-compatible API</li><li>Web console at :9001</li></ul></div>
       </div>
     </div>
 
@@ -596,8 +777,11 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/portainer.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/portainer.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('portainer')">source</button></div>
         <div class="env-hint">custom port: <code>PORT=9000</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/portainer.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">PORT</label><input class="env-input-field" data-var="PORT" value="9000" /></div>
+        </div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>docker run portainer/portainer-ce</li><li>Mounts /var/run/docker.sock</li><li>Persists data in Docker volume</li><li>First visit: create admin (5min window)</li></ul></div>
       </div>
     </div>
@@ -611,9 +795,54 @@
         </div>
       </div>
       <div class="card-bottom">
-        <div class="cmd" onclick="copyCmd(this)"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/gitea.sh | bash</span><button class="copy-btn">copy</button></div>
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/gitea.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('gitea')">source</button></div>
         <div class="env-hint"><code>GITEA_PORT=3000 GITEA_SSH_PORT=2222</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/gitea.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">GITEA_PORT</label><input class="env-input-field" data-var="GITEA_PORT" value="3000" /></div>
+          <div class="env-input-group"><label class="env-input-label">GITEA_SSH_PORT</label><input class="env-input-field" data-var="GITEA_SSH_PORT" value="2222" /></div>
+        </div>
         <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Creates docker-compose.yml in /opt/gitea</li><li>docker compose up -d gitea/gitea:latest</li><li>Web UI on :3000, SSH on :2222</li><li>First visit: installation wizard</li></ul></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- UTILS -->
+<div class="category" data-cat>
+  <div class="category-title">// utils</div>
+  <div class="grid">
+
+    <div class="card" data-tags="user sudo ssh key create deploy useradd">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ig">👤</div>
+        <div class="card-body">
+          <div class="card-header-row"><div class="card-name">user</div><div class="badges"><span class="badge badge-root">root</span></div><span class="expand-icon">▼</span></div>
+          <div class="card-desc">Create a sudo user with SSH key. Interactive or via env vars.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">USERNAME</span>=deploy SSH_KEY="ssh-ed25519 ..." curl -sL runsh.de/user.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('user')">source</button></div>
+        <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>useradd + sudo group</li><li>Copies or sets SSH authorized_keys</li><li>Optional NOPASSWD sudo</li></ul></div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="backup cron database mysql postgresql schedule daily">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon io">💾</div>
+        <div class="card-body">
+          <div class="card-header-row"><div class="card-name">cron-backup</div><div class="badges"><span class="badge badge-root">root</span></div><span class="expand-icon">▼</span></div>
+          <div class="card-desc">Daily database backup (MySQL + PostgreSQL). Keeps 7 days, auto-detects installed DBs.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd"><span class="prompt">$</span><span class="cmd-text"><span class="h">curl</span> -sL runsh.de/cron-backup.sh | bash</span><button class="copy-btn" onclick="copyCmd(this)">copy</button><button class="view-src-btn" onclick="viewSource('cron-backup')">source</button></div>
+        <div class="env-hint"><code>BACKUP_DIR=/opt/backups KEEP_DAYS=7</code></div>
+        <div class="env-inputs" data-base-cmd="curl -sL runsh.de/cron-backup.sh | bash">
+          <div class="env-input-group"><label class="env-input-label">BACKUP_DIR</label><input class="env-input-field" data-var="BACKUP_DIR" value="/opt/backups" /></div>
+          <div class="env-input-group"><label class="env-input-label">KEEP_DAYS</label><input class="env-input-field" data-var="KEEP_DAYS" value="7" /></div>
+        </div>
+        <div class="details"><div class="details-title">what it does</div><ul class="steps"><li>Auto-detects MySQL and PostgreSQL</li><li>Writes backup script + cron job (2am daily)</li><li>Runs first backup immediately</li></ul></div>
       </div>
     </div>
 
@@ -630,17 +859,122 @@
   <span style="color:#222">Always read a script before piping it to bash.</span>
 </footer>
 
+<!-- SOURCE MODAL -->
+<div class="modal-overlay" id="srcModal" onclick="modalOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-actions">
+        <button class="modal-copy-btn" id="modalCopyBtn" onclick="copyModalContent()">copy all</button>
+        <button class="modal-close" onclick="closeModal()" title="Close (Esc)">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <div class="modal-loading">loading…</div>
+    </div>
+  </div>
+</div>
+
 <script>
   function toggle(top) { top.closest('.card').classList.toggle('open'); }
 
-  function copyCmd(el) {
-    const text = el.querySelector('.cmd-text').textContent.replace(/\s+/g, ' ').trim();
+  function copyCmd(btn) {
+    const cmdEl = btn.closest('.cmd');
+    const text = cmdEl.querySelector('.cmd-text').textContent.replace(/\s+/g, ' ').trim();
     navigator.clipboard.writeText(text).then(() => {
-      const btn = el.querySelector('.copy-btn');
       btn.textContent = 'ok!'; btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
     });
   }
+
+  // Env var inputs — update cmd-text live
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.env-inputs').forEach(container => {
+      const baseCmd = container.dataset.baseCmd;
+      const cmdText = container.closest('.card-bottom').querySelector('.cmd-text');
+      if (!cmdText || !baseCmd) return;
+
+      function updateCmd() {
+        const inputs = container.querySelectorAll('.env-input-field');
+        const vars = [];
+        inputs.forEach(inp => {
+          const v = inp.dataset.var;
+          const val = inp.value.trim();
+          if (v && val) vars.push(`${v}=${val.includes(' ') ? '"' + val + '"' : val}`);
+        });
+        const prefix = vars.length ? vars.join(' ') + ' ' : '';
+        // Rebuild cmd-text with highlight on first token
+        const full = prefix + baseCmd;
+        const firstSpace = full.indexOf(' ');
+        const first = firstSpace === -1 ? full : full.slice(0, firstSpace);
+        const rest = firstSpace === -1 ? '' : full.slice(firstSpace);
+        cmdText.innerHTML = '<span class="h">' + escHtml(first) + '</span>' + escHtml(rest);
+      }
+
+      container.querySelectorAll('.env-input-field').forEach(inp => {
+        inp.addEventListener('input', updateCmd);
+      });
+    });
+  });
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // Source modal
+  let _modalContent = '';
+
+  function viewSource(scriptName) {
+    const modal = document.getElementById('srcModal');
+    const title = document.getElementById('modalTitle');
+    const body = document.getElementById('modalBody');
+    const copyBtn = document.getElementById('modalCopyBtn');
+    _modalContent = '';
+    copyBtn.textContent = 'copy all';
+    copyBtn.classList.remove('copied');
+    title.textContent = scriptName + '.sh — raw source';
+    body.innerHTML = '<div class="modal-loading">fetching source…</div>';
+    modal.classList.add('open');
+    const url = 'https://raw.githubusercontent.com/upupbl/runsh/main/' + scriptName + '.sh';
+    fetch(url)
+      .then(r => {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      })
+      .then(text => {
+        _modalContent = text;
+        const pre = document.createElement('pre');
+        pre.className = 'modal-code';
+        pre.textContent = text;
+        body.innerHTML = '';
+        body.appendChild(pre);
+      })
+      .catch(err => {
+        body.innerHTML = '<div class="modal-error">Failed to load source: ' + err.message + '</div>';
+      });
+  }
+
+  function closeModal() {
+    document.getElementById('srcModal').classList.remove('open');
+  }
+
+  function modalOverlayClick(e) {
+    if (e.target === document.getElementById('srcModal')) closeModal();
+  }
+
+  function copyModalContent() {
+    if (!_modalContent) return;
+    navigator.clipboard.writeText(_modalContent).then(() => {
+      const btn = document.getElementById('modalCopyBtn');
+      btn.textContent = 'copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'copy all'; btn.classList.remove('copied'); }, 1500);
+    });
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
 
   const input = document.getElementById('search');
   const noResults = document.getElementById('no-results');
