@@ -221,10 +221,36 @@
         <div class="card-icon orange">🔒</div>
         <div class="card-name">ssh-harden</div>
       </div>
-      <div class="card-desc">Disable root login, password auth, change default port.</div>
+      <div class="card-desc">Disable root login &amp; password auth, change port to 22222.</div>
       <div class="cmd" onclick="copyCmd(this)">
         <span class="prompt">$</span>
         <span class="cmd-text">curl -sL runsh.de/ssh-harden.sh | bash</span>
+        <button class="copy-btn">copy</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon cyan">💾</div>
+        <div class="card-name">swap</div>
+      </div>
+      <div class="card-desc">Create a 2G swap file. Override size with <code style="color:#7c4dff">SWAP_SIZE=4G</code>.</div>
+      <div class="cmd" onclick="copyCmd(this)">
+        <span class="prompt">$</span>
+        <span class="cmd-text">curl -sL runsh.de/swap.sh | bash</span>
+        <button class="copy-btn">copy</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon green">🚀</div>
+        <div class="card-name">bbr</div>
+      </div>
+      <div class="card-desc">Enable BBR TCP congestion control. Requires kernel ≥ 4.9.</div>
+      <div class="cmd" onclick="copyCmd(this)">
+        <span class="prompt">$</span>
+        <span class="cmd-text">curl -sL runsh.de/bbr.sh | bash</span>
         <button class="copy-btn">copy</button>
       </div>
     </div>
