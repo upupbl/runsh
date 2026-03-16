@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>runsh.de</title>
+  <title>runsh.de — Shell scripts, ready to run</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -15,7 +15,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 60px 20px;
+      padding: 60px 20px 80px;
     }
 
     /* Hero */
@@ -25,7 +25,7 @@
     }
 
     .logo {
-      font-size: 3rem;
+      font-size: 2.8rem;
       font-weight: 700;
       letter-spacing: -1px;
       background: linear-gradient(135deg, #00e5ff 0%, #7c4dff 100%);
@@ -35,50 +35,60 @@
     }
 
     .logo span {
-      opacity: 0.5;
-      -webkit-text-fill-color: #555;
+      -webkit-text-fill-color: #444;
     }
 
     .tagline {
       margin-top: 12px;
-      color: #666;
-      font-size: 0.9rem;
+      color: #555;
+      font-size: 0.85rem;
       letter-spacing: 2px;
       text-transform: uppercase;
     }
 
-    /* Scripts grid */
-    .section-title {
+    /* Category */
+    .category {
       width: 100%;
-      max-width: 720px;
-      font-size: 0.75rem;
+      max-width: 800px;
+      margin-bottom: 48px;
+    }
+
+    .category-title {
+      font-size: 0.7rem;
       color: #444;
       text-transform: uppercase;
       letter-spacing: 3px;
-      margin-bottom: 16px;
-      padding-left: 4px;
+      margin-bottom: 14px;
+      padding-left: 2px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .category-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #1e1e1e;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 16px;
-      width: 100%;
-      max-width: 720px;
-      margin-bottom: 48px;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 12px;
     }
 
+    /* Card */
     .card {
-      background: #161616;
-      border: 1px solid #222;
-      border-radius: 12px;
-      padding: 20px 24px;
-      transition: border-color 0.2s, transform 0.2s;
-      cursor: default;
+      background: #111;
+      border: 1px solid #1e1e1e;
+      border-radius: 10px;
+      padding: 18px 20px;
+      transition: border-color 0.2s, transform 0.15s;
     }
 
     .card:hover {
-      border-color: #7c4dff55;
+      border-color: #2e2e2e;
       transform: translateY(-2px);
     }
 
@@ -86,84 +96,97 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .card-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
+      font-size: 0.9rem;
       flex-shrink: 0;
     }
 
-    .card-icon.cyan   { background: #00e5ff18; }
-    .card-icon.purple { background: #7c4dff18; }
-    .card-icon.green  { background: #00e67618; }
-    .card-icon.orange { background: #ff6d0018; }
+    .cyan   { background: #00e5ff12; }
+    .purple { background: #7c4dff12; }
+    .green  { background: #00e67612; }
+    .orange { background: #ff6d0012; }
+    .red    { background: #ff175712; }
+    .yellow { background: #ffd74012; }
 
     .card-name {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 600;
       color: #e0e0e0;
     }
 
     .card-desc {
-      font-size: 0.8rem;
-      color: #555;
-      margin-bottom: 14px;
-      line-height: 1.5;
+      font-size: 0.78rem;
+      color: #4a4a4a;
+      margin-bottom: 12px;
+      line-height: 1.55;
     }
 
     .cmd {
-      background: #0d0d0d;
-      border: 1px solid #2a2a2a;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 0.78rem;
+      background: #0a0a0a;
+      border: 1px solid #222;
+      border-radius: 7px;
+      padding: 9px 12px;
+      font-size: 0.76rem;
       color: #00e5ff;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+      gap: 6px;
       cursor: pointer;
-      transition: border-color 0.2s;
+      transition: border-color 0.15s;
+      user-select: none;
     }
 
-    .cmd:hover { border-color: #00e5ff55; }
+    .cmd:hover { border-color: #00e5ff30; }
 
-    .cmd .prompt { color: #444; flex-shrink: 0; }
-
-    .cmd-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .prompt { color: #333; flex-shrink: 0; }
+    .cmd-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #888; }
+    .cmd-text .cmd-name { color: #00e5ff; }
 
     .copy-btn {
       background: none;
       border: none;
-      color: #444;
+      color: #333;
       cursor: pointer;
-      font-size: 0.75rem;
-      padding: 2px 6px;
+      font-size: 0.7rem;
+      font-family: inherit;
+      padding: 2px 5px;
       border-radius: 4px;
-      transition: color 0.2s;
+      transition: color 0.15s;
       flex-shrink: 0;
     }
-    .copy-btn:hover { color: #00e5ff; }
+    .copy-btn:hover  { color: #888; }
     .copy-btn.copied { color: #00e676; }
+
+    /* Env var badge */
+    .env-hint {
+      font-size: 0.68rem;
+      color: #333;
+      margin-top: 6px;
+      padding-left: 2px;
+    }
+    .env-hint code { color: #7c4dff; }
 
     /* Footer */
     footer {
       margin-top: auto;
       padding-top: 48px;
-      color: #333;
-      font-size: 0.75rem;
+      color: #2e2e2e;
+      font-size: 0.72rem;
       text-align: center;
+      line-height: 2;
     }
-
-    footer a { color: #444; text-decoration: none; }
+    footer a { color: #333; text-decoration: none; }
     footer a:hover { color: #7c4dff; }
+    .warning { color: #3a3a3a; font-size: 0.68rem; margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -173,99 +196,215 @@
     <div class="tagline">Shell scripts, ready to run</div>
   </div>
 
-  <div class="section-title">// available scripts</div>
+  <!-- Basics -->
+  <div class="category">
+    <div class="category-title">// basics</div>
+    <div class="grid">
 
-  <div class="grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon cyan">⚡</div>
+          <div class="card-name">init</div>
+        </div>
+        <div class="card-desc">New server bootstrap — mirrors, common tools, timezone (Asia/Shanghai), UFW setup.</div>
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/init.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+      </div>
 
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon cyan">⚡</div>
-        <div class="card-name">init</div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon green">🔄</div>
+          <div class="card-name">update</div>
+        </div>
+        <div class="card-desc">Update all packages, remove unused deps, clean apt cache, vacuum logs.</div>
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/update.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
       </div>
-      <div class="card-desc">New server bootstrap — mirrors, common tools, timezone setup.</div>
-      <div class="cmd" onclick="copyCmd(this)">
-        <span class="prompt">$</span>
-        <span class="cmd-text">curl -sL runsh.de/init.sh | bash</span>
-        <button class="copy-btn">copy</button>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon cyan">💾</div>
+          <div class="card-name">swap</div>
+        </div>
+        <div class="card-desc">Create a 2G swap file and persist it across reboots. Set swappiness=10.</div>
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/swap.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="env-hint">custom size: <code>SWAP_SIZE=4G</code> ... | bash</div>
       </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon purple">🚀</div>
+          <div class="card-name">bbr</div>
+        </div>
+        <div class="card-desc">Enable BBR TCP congestion control for better network throughput. Kernel ≥ 4.9.</div>
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/bbr.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon yellow">📊</div>
+          <div class="card-name">info</div>
+        </div>
+        <div class="card-desc">Display system overview — OS, CPU, memory, disk, network, Docker status.</div>
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/info.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon orange">⏱</div>
+          <div class="card-name">bench</div>
+        </div>
+        <div class="card-desc">Quick benchmark — CPU speed, disk read/write, network download test.</div>
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/bench.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+      </div>
+
     </div>
+  </div>
 
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon purple">🐳</div>
-        <div class="card-name">docker</div>
+  <!-- Security -->
+  <div class="category">
+    <div class="category-title">// security</div>
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon red">🔒</div>
+          <div class="card-name">ssh-harden</div>
+        </div>
+        <div class="card-desc">Disable root login &amp; password auth, change port to 22222. Requires key auth first!</div>
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/ssh-harden.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
       </div>
-      <div class="card-desc">Install Docker + Compose, add user to docker group.</div>
-      <div class="cmd" onclick="copyCmd(this)">
-        <span class="prompt">$</span>
-        <span class="cmd-text">curl -sL runsh.de/docker.sh | bash</span>
-        <button class="copy-btn">copy</button>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon orange">🛡</div>
+          <div class="card-name">ufw</div>
+        </div>
+        <div class="card-desc">Configure UFW firewall: deny all incoming, allow SSH / HTTP / HTTPS.</div>
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/ufw.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="env-hint">custom port: <code>SSH_PORT=22222</code> ... | bash</div>
       </div>
+
     </div>
+  </div>
 
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon green">🐚</div>
-        <div class="card-name">zsh</div>
+  <!-- Dev Environment -->
+  <div class="category">
+    <div class="category-title">// dev environment</div>
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon purple">🐳</div>
+          <div class="card-name">docker</div>
+        </div>
+        <div class="card-desc">Install Docker Engine + Compose plugin. Adds current user to docker group.</div>
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/docker.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
       </div>
-      <div class="card-desc">Install zsh + oh-my-zsh with sensible defaults.</div>
-      <div class="cmd" onclick="copyCmd(this)">
-        <span class="prompt">$</span>
-        <span class="cmd-text">curl -sL runsh.de/zsh.sh | bash</span>
-        <button class="copy-btn">copy</button>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon green">🐚</div>
+          <div class="card-name">zsh</div>
+        </div>
+        <div class="card-desc">Install zsh + oh-my-zsh with autosuggestions and syntax highlighting.</div>
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/zsh.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
       </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon green">⬢</div>
+          <div class="card-name">node</div>
+        </div>
+        <div class="card-desc">Install Node.js via nvm. Defaults to LTS v22. Easily switch versions later.</div>
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/node.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="env-hint">custom version: <code>NODE_VERSION=20</code> ... | bash</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon cyan">🌐</div>
+          <div class="card-name">nginx</div>
+        </div>
+        <div class="card-desc">Install Nginx with gzip, tuned worker count, and a clean default page.</div>
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/nginx.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon yellow">🔐</div>
+          <div class="card-name">cert</div>
+        </div>
+        <div class="card-desc">Get a free SSL cert via acme.sh (Let's Encrypt). Auto-installs Nginx config.</div>
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="cmd-name">DOMAIN</span>=example.com EMAIL=you@x.com curl -sL runsh.de/cert.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+      </div>
+
     </div>
-
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon orange">🔒</div>
-        <div class="card-name">ssh-harden</div>
-      </div>
-      <div class="card-desc">Disable root login &amp; password auth, change port to 22222.</div>
-      <div class="cmd" onclick="copyCmd(this)">
-        <span class="prompt">$</span>
-        <span class="cmd-text">curl -sL runsh.de/ssh-harden.sh | bash</span>
-        <button class="copy-btn">copy</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon cyan">💾</div>
-        <div class="card-name">swap</div>
-      </div>
-      <div class="card-desc">Create a 2G swap file. Override size with <code style="color:#7c4dff">SWAP_SIZE=4G</code>.</div>
-      <div class="cmd" onclick="copyCmd(this)">
-        <span class="prompt">$</span>
-        <span class="cmd-text">curl -sL runsh.de/swap.sh | bash</span>
-        <button class="copy-btn">copy</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon green">🚀</div>
-        <div class="card-name">bbr</div>
-      </div>
-      <div class="card-desc">Enable BBR TCP congestion control. Requires kernel ≥ 4.9.</div>
-      <div class="cmd" onclick="copyCmd(this)">
-        <span class="prompt">$</span>
-        <span class="cmd-text">curl -sL runsh.de/bbr.sh | bash</span>
-        <button class="copy-btn">copy</button>
-      </div>
-    </div>
-
   </div>
 
   <footer>
     <a href="https://github.com/upupbl/runsh" target="_blank">github.com/upupbl/runsh</a>
-    &nbsp;·&nbsp; use at your own risk &nbsp;·&nbsp; always read before piping to bash
+    &nbsp;·&nbsp; MIT License
+    <div class="warning">Always read a script before piping it to bash.</div>
   </footer>
 
   <script>
     function copyCmd(el) {
-      const text = el.querySelector('.cmd-text').textContent.trim();
-      navigator.clipboard.writeText(text).then(() => {
+      const text = 'curl -sL ' + location.hostname + '/' +
+        el.closest('.card').querySelector('.card-name').textContent.trim() + '.sh | bash';
+      // Use actual text from cmd-text for env-var commands
+      const raw = el.querySelector('.cmd-text').textContent.replace(/\s+/g, ' ').trim();
+      navigator.clipboard.writeText(raw).then(() => {
         const btn = el.querySelector('.copy-btn');
         btn.textContent = 'ok!';
         btn.classList.add('copied');
