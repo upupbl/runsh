@@ -5,413 +5,974 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>runsh.de — Shell scripts, ready to run</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:      #0a0a0a;
+      --bg2:     #111;
+      --bg3:     #161616;
+      --border:  #1e1e1e;
+      --border2: #2a2a2a;
+      --text:    #e0e0e0;
+      --muted:   #444;
+      --dim:     #2e2e2e;
+      --cyan:    #00e5ff;
+      --purple:  #7c4dff;
+      --green:   #00e676;
+      --orange:  #ff9100;
+      --red:     #ff1744;
+      --yellow:  #ffd740;
+    }
 
     body {
-      background: #0d0d0d;
-      color: #e0e0e0;
+      background: var(--bg);
+      color: var(--text);
       font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 60px 20px 80px;
+      padding: 56px 20px 80px;
     }
 
-    /* Hero */
-    .hero {
-      text-align: center;
-      margin-bottom: 64px;
-    }
+    /* ── Hero ──────────────────────────────────────── */
+    .hero { text-align: center; margin-bottom: 56px; }
 
     .logo {
       font-size: 2.8rem;
       font-weight: 700;
       letter-spacing: -1px;
-      background: linear-gradient(135deg, #00e5ff 0%, #7c4dff 100%);
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-
-    .logo span {
-      -webkit-text-fill-color: #444;
-    }
+    .logo span { -webkit-text-fill-color: #333; }
 
     .tagline {
-      margin-top: 12px;
-      color: #555;
-      font-size: 0.85rem;
-      letter-spacing: 2px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      letter-spacing: 2.5px;
       text-transform: uppercase;
     }
 
-    /* Category */
-    .category {
+    .stats {
+      margin-top: 20px;
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--dim);
+    }
+    .stats span { color: var(--muted); }
+
+    /* ── Search ────────────────────────────────────── */
+    .search-wrap {
       width: 100%;
       max-width: 800px;
-      margin-bottom: 48px;
+      margin-bottom: 40px;
+      position: relative;
     }
+    .search-wrap::before {
+      content: '⌕';
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 1.1rem;
+      pointer-events: none;
+    }
+    #search {
+      width: 100%;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px 10px 38px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    #search:focus { border-color: var(--border2); }
+    #search::placeholder { color: var(--muted); }
+
+    /* ── Category ──────────────────────────────────── */
+    .category { width: 100%; max-width: 800px; margin-bottom: 44px; }
 
     .category-title {
-      font-size: 0.7rem;
-      color: #444;
+      font-size: 0.68rem;
+      color: var(--muted);
       text-transform: uppercase;
       letter-spacing: 3px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       padding-left: 2px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
-
     .category-title::after {
       content: '';
       flex: 1;
       height: 1px;
-      background: #1e1e1e;
+      background: var(--border);
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 10px;
+    }
+
+    /* ── Card ──────────────────────────────────────── */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: var(--border2); }
+    .card.hidden { display: none; }
+
+    .card-top {
+      padding: 16px 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
       gap: 12px;
     }
 
-    /* Card */
-    .card {
-      background: #111;
-      border: 1px solid #1e1e1e;
-      border-radius: 10px;
-      padding: 18px 20px;
-      transition: border-color 0.2s, transform 0.15s;
-    }
-
-    .card:hover {
-      border-color: #2e2e2e;
-      transform: translateY(-2px);
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
     .card-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       flex-shrink: 0;
+      margin-top: 1px;
     }
+    .ic { background: #00e5ff0e; }
+    .ip { background: #7c4dff0e; }
+    .ig { background: #00e6760e; }
+    .io { background: #ff91000e; }
+    .ir { background: #ff17440e; }
+    .iy { background: #ffd7400e; }
 
-    .cyan   { background: #00e5ff12; }
-    .purple { background: #7c4dff12; }
-    .green  { background: #00e67612; }
-    .orange { background: #ff6d0012; }
-    .red    { background: #ff175712; }
-    .yellow { background: #ffd74012; }
+    .card-body { flex: 1; min-width: 0; }
+
+    .card-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
 
     .card-name {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 600;
-      color: #e0e0e0;
+      color: var(--text);
     }
 
+    .badges { display: flex; gap: 5px; align-items: center; }
+
+    .badge {
+      font-size: 0.6rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .badge-ubuntu { background: #e9572220; color: #e95722; }
+    .badge-debian { background: #d7081220; color: #d70812; }
+    .badge-root   { background: #ffd74020; color: #ffd740; }
+
     .card-desc {
-      font-size: 0.78rem;
-      color: #4a4a4a;
-      margin-bottom: 12px;
+      font-size: 0.76rem;
+      color: var(--muted);
       line-height: 1.55;
     }
 
+    .expand-icon {
+      font-size: 0.65rem;
+      color: var(--dim);
+      flex-shrink: 0;
+      transition: transform 0.2s;
+      margin-top: 2px;
+    }
+    .card.open .expand-icon { transform: rotate(180deg); }
+
+    /* ── Card bottom (cmd + details) ───────────────── */
+    .card-bottom { padding: 0 18px 16px; }
+
     .cmd {
-      background: #0a0a0a;
-      border: 1px solid #222;
+      background: var(--bg);
+      border: 1px solid var(--border);
       border-radius: 7px;
       padding: 9px 12px;
-      font-size: 0.76rem;
-      color: #00e5ff;
+      font-size: 0.75rem;
       display: flex;
       align-items: center;
       gap: 6px;
       cursor: pointer;
       transition: border-color 0.15s;
-      user-select: none;
+      margin-bottom: 0;
     }
-
-    .cmd:hover { border-color: #00e5ff30; }
-
-    .prompt { color: #333; flex-shrink: 0; }
+    .cmd:hover { border-color: #00e5ff25; }
+    .prompt { color: var(--dim); flex-shrink: 0; }
     .cmd-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #888; }
-    .cmd-text .cmd-name { color: #00e5ff; }
-
+    .cmd-text .h { color: var(--cyan); }
     .copy-btn {
-      background: none;
-      border: none;
-      color: #333;
-      cursor: pointer;
-      font-size: 0.7rem;
-      font-family: inherit;
-      padding: 2px 5px;
-      border-radius: 4px;
+      background: none; border: none; color: var(--dim);
+      cursor: pointer; font-size: 0.68rem; font-family: inherit;
+      padding: 2px 5px; border-radius: 4px; flex-shrink: 0;
       transition: color 0.15s;
-      flex-shrink: 0;
     }
-    .copy-btn:hover  { color: #888; }
-    .copy-btn.copied { color: #00e676; }
+    .copy-btn:hover { color: #888; }
+    .copy-btn.copied { color: var(--green); }
 
-    /* Env var badge */
     .env-hint {
-      font-size: 0.68rem;
-      color: #333;
-      margin-top: 6px;
+      font-size: 0.67rem;
+      color: var(--dim);
+      margin-top: 7px;
       padding-left: 2px;
     }
-    .env-hint code { color: #7c4dff; }
+    .env-hint code { color: var(--purple); }
 
-    /* Footer */
+    /* ── Expandable details ────────────────────────── */
+    .details {
+      display: none;
+      margin-top: 12px;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+    }
+    .card.open .details { display: block; }
+
+    .details-title {
+      font-size: 0.65rem;
+      color: var(--dim);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+
+    .steps { list-style: none; }
+    .steps li {
+      font-size: 0.74rem;
+      color: var(--muted);
+      padding: 3px 0;
+      display: flex;
+      gap: 8px;
+    }
+    .steps li::before { content: '·'; color: var(--dim); flex-shrink: 0; }
+
+    .warn-note {
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: #ffd74008;
+      border: 1px solid #ffd74020;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      color: #ffd74099;
+      display: flex;
+      gap: 8px;
+    }
+
+    /* ── No results ────────────────────────────────── */
+    #no-results {
+      display: none;
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    /* ── Footer ────────────────────────────────────── */
     footer {
       margin-top: auto;
-      padding-top: 48px;
-      color: #2e2e2e;
-      font-size: 0.72rem;
+      padding-top: 40px;
+      color: var(--dim);
+      font-size: 0.7rem;
       text-align: center;
       line-height: 2;
     }
-    footer a { color: #333; text-decoration: none; }
-    footer a:hover { color: #7c4dff; }
-    .warning { color: #3a3a3a; font-size: 0.68rem; margin-top: 8px; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--purple); }
   </style>
 </head>
 <body>
 
-  <div class="hero">
-    <div class="logo">run<span>sh</span>.de</div>
-    <div class="tagline">Shell scripts, ready to run</div>
+<div class="hero">
+  <div class="logo">run<span>sh</span>.de</div>
+  <div class="tagline">Shell scripts, ready to run</div>
+  <div class="stats">
+    <div>16 scripts</div>
+    <div>·</div>
+    <div>Ubuntu / Debian</div>
+    <div>·</div>
+    <div>MIT License</div>
   </div>
+</div>
 
-  <!-- Basics -->
-  <div class="category">
-    <div class="category-title">// basics</div>
-    <div class="grid">
+<div class="search-wrap">
+  <input id="search" type="text" placeholder="search scripts..." autocomplete="off" spellcheck="false" />
+</div>
 
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon cyan">⚡</div>
-          <div class="card-name">init</div>
-        </div>
-        <div class="card-desc">New server bootstrap — mirrors, common tools, timezone (Asia/Shanghai), UFW setup.</div>
-        <div class="cmd" onclick="copyCmd(this)">
-          <span class="prompt">$</span>
-          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/init.sh | bash</span>
-          <button class="copy-btn">copy</button>
+<!-- ── BASICS ──────────────────────────────────────────── -->
+<div class="category" data-cat>
+  <div class="category-title">// basics</div>
+  <div class="grid">
+
+    <div class="card" data-tags="init bootstrap setup new server">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ic">⚡</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">init</div>
+            <div class="badges">
+              <span class="badge badge-root">root</span>
+              <span class="badge badge-ubuntu">ubuntu</span>
+              <span class="badge badge-debian">debian</span>
+            </div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">New server bootstrap — update mirrors, install common tools, set timezone, enable UFW.</div>
         </div>
       </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon green">🔄</div>
-          <div class="card-name">update</div>
-        </div>
-        <div class="card-desc">Update all packages, remove unused deps, clean apt cache, vacuum logs.</div>
+      <div class="card-bottom">
         <div class="cmd" onclick="copyCmd(this)">
           <span class="prompt">$</span>
-          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/update.sh | bash</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/init.sh | bash</span>
           <button class="copy-btn">copy</button>
         </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon cyan">💾</div>
-          <div class="card-name">swap</div>
-        </div>
-        <div class="card-desc">Create a 2G swap file and persist it across reboots. Set swappiness=10.</div>
-        <div class="cmd" onclick="copyCmd(this)">
-          <span class="prompt">$</span>
-          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/swap.sh | bash</span>
-          <button class="copy-btn">copy</button>
-        </div>
-        <div class="env-hint">custom size: <code>SWAP_SIZE=4G</code> ... | bash</div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon purple">🚀</div>
-          <div class="card-name">bbr</div>
-        </div>
-        <div class="card-desc">Enable BBR TCP congestion control for better network throughput. Kernel ≥ 4.9.</div>
-        <div class="cmd" onclick="copyCmd(this)">
-          <span class="prompt">$</span>
-          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/bbr.sh | bash</span>
-          <button class="copy-btn">copy</button>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>apt-get update &amp; install: curl wget git vim htop unzip net-tools fail2ban ufw</li>
+            <li>Set timezone to Asia/Shanghai</li>
+            <li>UFW: deny incoming, allow SSH, enable</li>
+          </ul>
         </div>
       </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon yellow">📊</div>
-          <div class="card-name">info</div>
-        </div>
-        <div class="card-desc">Display system overview — OS, CPU, memory, disk, network, Docker status.</div>
-        <div class="cmd" onclick="copyCmd(this)">
-          <span class="prompt">$</span>
-          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/info.sh | bash</span>
-          <button class="copy-btn">copy</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon orange">⏱</div>
-          <div class="card-name">bench</div>
-        </div>
-        <div class="card-desc">Quick benchmark — CPU speed, disk read/write, network download test.</div>
-        <div class="cmd" onclick="copyCmd(this)">
-          <span class="prompt">$</span>
-          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/bench.sh | bash</span>
-          <button class="copy-btn">copy</button>
-        </div>
-      </div>
-
     </div>
-  </div>
 
-  <!-- Security -->
-  <div class="category">
-    <div class="category-title">// security</div>
-    <div class="grid">
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon red">🔒</div>
-          <div class="card-name">ssh-harden</div>
-        </div>
-        <div class="card-desc">Disable root login &amp; password auth, change port to 22222. Requires key auth first!</div>
-        <div class="cmd" onclick="copyCmd(this)">
-          <span class="prompt">$</span>
-          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/ssh-harden.sh | bash</span>
-          <button class="copy-btn">copy</button>
+    <div class="card" data-tags="update upgrade packages apt clean">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ig">🔄</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">update</div>
+            <div class="badges"><span class="badge badge-root">root</span></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">Update all packages, remove unused deps, clean apt cache, vacuum systemd logs.</div>
         </div>
       </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon orange">🛡</div>
-          <div class="card-name">ufw</div>
-        </div>
-        <div class="card-desc">Configure UFW firewall: deny all incoming, allow SSH / HTTP / HTTPS.</div>
+      <div class="card-bottom">
         <div class="cmd" onclick="copyCmd(this)">
           <span class="prompt">$</span>
-          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/ufw.sh | bash</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/update.sh | bash</span>
           <button class="copy-btn">copy</button>
         </div>
-        <div class="env-hint">custom port: <code>SSH_PORT=22222</code> ... | bash</div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>apt-get update + upgrade (non-interactive)</li>
+            <li>autoremove, autoclean, clean</li>
+            <li>journalctl vacuum (keep 7 days)</li>
+            <li>Reports disk free space and reboot requirement</li>
+          </ul>
+        </div>
       </div>
-
     </div>
-  </div>
 
-  <!-- Dev Environment -->
-  <div class="category">
-    <div class="category-title">// dev environment</div>
-    <div class="grid">
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon purple">🐳</div>
-          <div class="card-name">docker</div>
-        </div>
-        <div class="card-desc">Install Docker Engine + Compose plugin. Adds current user to docker group.</div>
-        <div class="cmd" onclick="copyCmd(this)">
-          <span class="prompt">$</span>
-          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/docker.sh | bash</span>
-          <button class="copy-btn">copy</button>
+    <div class="card" data-tags="swap memory virtual">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ic">💾</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">swap</div>
+            <div class="badges"><span class="badge badge-root">root</span></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">Create a 2G swap file, persist across reboots, set swappiness=10.</div>
         </div>
       </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon green">🐚</div>
-          <div class="card-name">zsh</div>
-        </div>
-        <div class="card-desc">Install zsh + oh-my-zsh with autosuggestions and syntax highlighting.</div>
+      <div class="card-bottom">
         <div class="cmd" onclick="copyCmd(this)">
           <span class="prompt">$</span>
-          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/zsh.sh | bash</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/swap.sh | bash</span>
           <button class="copy-btn">copy</button>
         </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon green">⬢</div>
-          <div class="card-name">node</div>
-        </div>
-        <div class="card-desc">Install Node.js via nvm. Defaults to LTS v22. Easily switch versions later.</div>
-        <div class="cmd" onclick="copyCmd(this)">
-          <span class="prompt">$</span>
-          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/node.sh | bash</span>
-          <button class="copy-btn">copy</button>
-        </div>
-        <div class="env-hint">custom version: <code>NODE_VERSION=20</code> ... | bash</div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon cyan">🌐</div>
-          <div class="card-name">nginx</div>
-        </div>
-        <div class="card-desc">Install Nginx with gzip, tuned worker count, and a clean default page.</div>
-        <div class="cmd" onclick="copyCmd(this)">
-          <span class="prompt">$</span>
-          <span class="cmd-text"><span class="cmd-name">curl</span> -sL runsh.de/nginx.sh | bash</span>
-          <button class="copy-btn">copy</button>
+        <div class="env-hint">custom size: <code>SWAP_SIZE=4G</code> bash -c "$(curl -sL runsh.de/swap.sh)"</div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>Creates /swapfile via fallocate (or dd as fallback)</li>
+            <li>chmod 600, mkswap, swapon</li>
+            <li>Appends to /etc/fstab for persistence</li>
+            <li>Sets vm.swappiness=10 in /etc/sysctl.conf</li>
+          </ul>
         </div>
       </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon yellow">🔐</div>
-          <div class="card-name">cert</div>
-        </div>
-        <div class="card-desc">Get a free SSL cert via acme.sh (Let's Encrypt). Auto-installs Nginx config.</div>
-        <div class="cmd" onclick="copyCmd(this)">
-          <span class="prompt">$</span>
-          <span class="cmd-text"><span class="cmd-name">DOMAIN</span>=example.com EMAIL=you@x.com curl -sL runsh.de/cert.sh | bash</span>
-          <button class="copy-btn">copy</button>
-        </div>
-      </div>
-
     </div>
+
+    <div class="card" data-tags="bbr tcp network speed congestion">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ip">🚀</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">bbr</div>
+            <div class="badges"><span class="badge badge-root">root</span></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">Enable BBR TCP congestion control. Improves throughput on high-latency links. Kernel ≥ 4.9.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/bbr.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>Checks kernel version ≥ 4.9</li>
+            <li>modprobe tcp_bbr</li>
+            <li>Sets net.core.default_qdisc=fq</li>
+            <li>Sets net.ipv4.tcp_congestion_control=bbr</li>
+            <li>Persists via /etc/sysctl.conf</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="info system overview cpu memory disk">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon iy">📊</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">info</div>
+            <div class="badges"></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">System overview: OS, CPU, RAM, disk, network interfaces, public IP, Docker status.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/info.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>Reads /etc/os-release, /proc/cpuinfo, /proc/loadavg</li>
+            <li>Shows memory & swap usage via free -h</li>
+            <li>Shows disk usage via df -h</li>
+            <li>Shows network interfaces and public IP</li>
+            <li>Shows Docker version and running containers (if installed)</li>
+            <li>Shows current TCP congestion algorithm</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="bench benchmark performance cpu disk network speed test">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon io">⏱</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">bench</div>
+            <div class="badges"></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">Quick benchmark: CPU speed, disk read/write (512MB), network download from multiple nodes.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/bench.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>CPU: times a Python prime calculation (falls back to dd+md5)</li>
+            <li>Disk write: dd 512MB to tmpfile with fdatasync</li>
+            <li>Disk read: dd 512MB from tmpfile</li>
+            <li>Network: downloads 100MB from Tokyo / LA nodes</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="cleanup clean disk space docker logs apt">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ig">🧹</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">cleanup</div>
+            <div class="badges"><span class="badge badge-root">root</span></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">Deep clean: apt cache, old logs, temp files, Docker leftovers. Reports freed space.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/cleanup.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>apt autoremove, autoclean, clean</li>
+            <li>journalctl vacuum (keep 7 days)</li>
+            <li>Deletes /var/log/*.gz older than 30 days</li>
+            <li>Deletes /tmp files not accessed in 3 days</li>
+            <li>docker system prune -f (if Docker installed)</li>
+            <li>Lists top 10 large files in /var and /tmp</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
   </div>
+</div>
 
-  <footer>
-    <a href="https://github.com/upupbl/runsh" target="_blank">github.com/upupbl/runsh</a>
-    &nbsp;·&nbsp; MIT License
-    <div class="warning">Always read a script before piping it to bash.</div>
-  </footer>
+<!-- ── SECURITY ─────────────────────────────────────────── -->
+<div class="category" data-cat>
+  <div class="category-title">// security</div>
+  <div class="grid">
 
-  <script>
-    function copyCmd(el) {
-      const text = 'curl -sL ' + location.hostname + '/' +
-        el.closest('.card').querySelector('.card-name').textContent.trim() + '.sh | bash';
-      // Use actual text from cmd-text for env-var commands
-      const raw = el.querySelector('.cmd-text').textContent.replace(/\s+/g, ' ').trim();
-      navigator.clipboard.writeText(raw).then(() => {
-        const btn = el.querySelector('.copy-btn');
-        btn.textContent = 'ok!';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
-      });
-    }
-  </script>
+    <div class="card" data-tags="ssh harden security port password root login">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ir">🔒</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">ssh-harden</div>
+            <div class="badges"><span class="badge badge-root">root</span></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">Disable root login & password auth, change SSH port to 22222.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/ssh-harden.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>Verifies SSH key exists before proceeding</li>
+            <li>Backs up /etc/ssh/sshd_config</li>
+            <li>Sets Port=22222, PermitRootLogin=no, PasswordAuthentication=no</li>
+            <li>Sets MaxAuthTries=3, X11Forwarding=no</li>
+            <li>Updates UFW rules if installed</li>
+          </ul>
+          <div class="warn-note">⚠ Ensure SSH key auth works before running. Test in a new terminal after!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="ufw firewall port block allow">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon io">🛡</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">ufw</div>
+            <div class="badges"><span class="badge badge-root">root</span></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">Configure UFW: deny all incoming, allow SSH (22) / HTTP (80) / HTTPS (443).</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/ufw.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="env-hint">custom SSH port: <code>SSH_PORT=22222</code> bash -c "$(curl -sL runsh.de/ufw.sh)"</div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>ufw reset → deny incoming → allow outgoing</li>
+            <li>Allow SSH port (default 22), HTTP 80, HTTPS 443</li>
+            <li>ufw enable, shows final rules</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="fail2ban brute force ban ip ssh security">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ir">🚫</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">fail2ban</div>
+            <div class="badges"><span class="badge badge-root">root</span></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">Block brute-force attacks. Bans IPs after 5 failed SSH attempts for 1 hour.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/fail2ban.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>Installs fail2ban</li>
+            <li>SSH jail: maxretry=3, bantime=3600s, findtime=600s</li>
+            <li>Nginx jails (http-auth + limit-req) if Nginx is installed</li>
+            <li>Enables fail2ban service</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── DEV ENVIRONMENT ──────────────────────────────────── -->
+<div class="category" data-cat>
+  <div class="category-title">// dev environment</div>
+  <div class="grid">
+
+    <div class="card" data-tags="docker compose container install">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ip">🐳</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">docker</div>
+            <div class="badges"><span class="badge badge-root">root</span></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">Install Docker Engine + Compose plugin from official repo. Adds user to docker group.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/docker.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>Removes old docker.io / containerd packages</li>
+            <li>Adds official Docker GPG key and apt repository</li>
+            <li>Installs docker-ce, docker-ce-cli, containerd.io, buildx, compose</li>
+            <li>Enables docker service, adds current user to docker group</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="zsh shell ohmyzsh terminal">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ig">🐚</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">zsh</div>
+            <div class="badges"></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">Install zsh + oh-my-zsh with autosuggestions and syntax highlighting plugins.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/zsh.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>apt install zsh curl git</li>
+            <li>Installs oh-my-zsh (RUNZSH=no, CHSH=no)</li>
+            <li>Clones zsh-autosuggestions + zsh-syntax-highlighting</li>
+            <li>Updates plugins=() in .zshrc</li>
+            <li>Sets zsh as default shell via chsh</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="node nodejs nvm javascript">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ig">⬢</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">node</div>
+            <div class="badges"></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">Install Node.js via nvm. Defaults to LTS v22. Supports multiple versions.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/node.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="env-hint">custom version: <code>NODE_VERSION=20</code> bash -c "$(curl -sL runsh.de/node.sh)"</div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>Installs nvm via official install script</li>
+            <li>Adds nvm init to .bashrc and .zshrc</li>
+            <li>nvm install + nvm alias default</li>
+            <li>npm install --upgrade pip</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="python pyenv pip venv">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon iy">🐍</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">python</div>
+            <div class="badges"></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">Install Python via pyenv. Defaults to 3.13. Easily switch versions per project.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/python.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="env-hint">custom version: <code>PYTHON_VERSION=3.12</code> bash -c "$(curl -sL runsh.de/python.sh)"</div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>Installs build dependencies (libssl, zlib, etc.)</li>
+            <li>Installs pyenv via pyenv.run</li>
+            <li>Adds pyenv init to .bashrc and .zshrc</li>
+            <li>pyenv install + pyenv global</li>
+            <li>pip install --upgrade pip</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="nginx web server http reverse proxy">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ic">🌐</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">nginx</div>
+            <div class="badges"><span class="badge badge-root">root</span></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">Install Nginx with gzip enabled, worker count tuned to CPU cores.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/nginx.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>apt install nginx, enable + start service</li>
+            <li>Sets worker_processes to nproc count</li>
+            <li>Enables gzip for text/css/js/json/svg</li>
+            <li>server_tokens off</li>
+            <li>UFW allow 'Nginx Full' (if installed)</li>
+            <li>Creates a minimal default index.html</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="ssl cert certificate https letsencrypt acme">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon iy">🔐</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">cert</div>
+            <div class="badges"><span class="badge badge-root">root</span></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">Get a free SSL cert via acme.sh (Let's Encrypt). Auto-configures Nginx.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="h">DOMAIN</span>=example.com EMAIL=x@x.com curl -sL runsh.de/cert.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>Installs acme.sh via get.acme.sh</li>
+            <li>Issues cert using webroot (Nginx/Apache) or standalone mode</li>
+            <li>Installs cert to /etc/ssl/&lt;domain&gt;/</li>
+            <li>Creates Nginx server block with HTTP→HTTPS redirect</li>
+            <li>Auto-renewal via cron (built into acme.sh)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── DATABASES ────────────────────────────────────────── -->
+<div class="category" data-cat>
+  <div class="category-title">// databases</div>
+  <div class="grid">
+
+    <div class="card" data-tags="postgres postgresql database sql">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ip">🐘</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">postgres</div>
+            <div class="badges"><span class="badge badge-root">root</span></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">Install PostgreSQL 17 from official repo. Creates a user and database.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/postgres.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="env-hint"><code>PG_VERSION=16 PG_USER=myuser PG_PASS=secret PG_DB=mydb</code></div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>Adds official PostgreSQL apt repository</li>
+            <li>Installs postgresql-17</li>
+            <li>Creates user (default: dbuser) with random password</li>
+            <li>Creates database (default: mydb), grants all privileges</li>
+            <li>Prints connection info at end</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="redis cache memory database key value">
+      <div class="card-top" onclick="toggle(this)">
+        <div class="card-icon ir">⚡</div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <div class="card-name">redis</div>
+            <div class="badges"><span class="badge badge-root">root</span></div>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="card-desc">Install Redis, bind to localhost, set LRU eviction policy. Optional password.</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="cmd" onclick="copyCmd(this)">
+          <span class="prompt">$</span>
+          <span class="cmd-text"><span class="h">curl</span> -sL runsh.de/redis.sh | bash</span>
+          <button class="copy-btn">copy</button>
+        </div>
+        <div class="env-hint">with password: <code>REDIS_PASSWORD=secret</code> bash -c "$(curl -sL runsh.de/redis.sh)"</div>
+        <div class="details">
+          <div class="details-title">what it does</div>
+          <ul class="steps">
+            <li>apt install redis-server</li>
+            <li>Bind to 127.0.0.1 only (secure default)</li>
+            <li>Sets supervised=systemd, maxmemory-policy=allkeys-lru</li>
+            <li>Optional requirepass configuration</li>
+            <li>Verifies with redis-cli ping</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="no-results">no scripts found for "<span id="search-term"></span>"</div>
+
+<footer>
+  <a href="https://github.com/upupbl/runsh" target="_blank">github.com/upupbl/runsh</a>
+  &nbsp;·&nbsp; MIT License &nbsp;·&nbsp;
+  <a href="https://github.com/upupbl/runsh/issues" target="_blank">report issue</a>
+  <br>
+  <span style="color:#222">Always read a script before piping it to bash.</span>
+</footer>
+
+<script>
+  // Toggle card expand
+  function toggle(top) {
+    top.closest('.card').classList.toggle('open');
+  }
+
+  // Copy command
+  function copyCmd(el) {
+    const text = el.querySelector('.cmd-text').textContent.replace(/\s+/g, ' ').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = el.querySelector('.copy-btn');
+      btn.textContent = 'ok!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
+    });
+  }
+
+  // Search
+  const input = document.getElementById('search');
+  const noResults = document.getElementById('no-results');
+  const searchTerm = document.getElementById('search-term');
+
+  input.addEventListener('input', () => {
+    const q = input.value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.card');
+    const cats = document.querySelectorAll('[data-cat]');
+    let visible = 0;
+
+    cards.forEach(card => {
+      const name = card.querySelector('.card-name').textContent.toLowerCase();
+      const desc = card.querySelector('.card-desc').textContent.toLowerCase();
+      const tags = (card.dataset.tags || '').toLowerCase();
+      const match = !q || name.includes(q) || desc.includes(q) || tags.includes(q);
+      card.classList.toggle('hidden', !match);
+      if (match) visible++;
+    });
+
+    // Hide empty categories
+    cats.forEach(cat => {
+      const anyVisible = [...cat.querySelectorAll('.card')].some(c => !c.classList.contains('hidden'));
+      cat.style.display = anyVisible ? '' : 'none';
+    });
+
+    noResults.style.display = visible === 0 ? 'block' : 'none';
+    searchTerm.textContent = q;
+  });
+</script>
 
 </body>
 </html>
