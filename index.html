@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>runsh.de</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0d0d0d;
+      color: #e0e0e0;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 20px;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .logo {
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #00e5ff 0%, #7c4dff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo span {
+      opacity: 0.5;
+      -webkit-text-fill-color: #555;
+    }
+
+    .tagline {
+      margin-top: 12px;
+      color: #666;
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* Scripts grid */
+    .section-title {
+      width: 100%;
+      max-width: 720px;
+      font-size: 0.75rem;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 16px;
+      padding-left: 4px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+      width: 100%;
+      max-width: 720px;
+      margin-bottom: 48px;
+    }
+
+    .card {
+      background: #161616;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 20px 24px;
+      transition: border-color 0.2s, transform 0.2s;
+      cursor: default;
+    }
+
+    .card:hover {
+      border-color: #7c4dff55;
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .card-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .card-icon.cyan   { background: #00e5ff18; }
+    .card-icon.purple { background: #7c4dff18; }
+    .card-icon.green  { background: #00e67618; }
+    .card-icon.orange { background: #ff6d0018; }
+
+    .card-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #e0e0e0;
+    }
+
+    .card-desc {
+      font-size: 0.8rem;
+      color: #555;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .cmd {
+      background: #0d0d0d;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.78rem;
+      color: #00e5ff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .cmd:hover { border-color: #00e5ff55; }
+
+    .cmd .prompt { color: #444; flex-shrink: 0; }
+
+    .cmd-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .copy-btn {
+      background: none;
+      border: none;
+      color: #444;
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color 0.2s;
+      flex-shrink: 0;
+    }
+    .copy-btn:hover { color: #00e5ff; }
+    .copy-btn.copied { color: #00e676; }
+
+    /* Footer */
+    footer {
+      margin-top: auto;
+      padding-top: 48px;
+      color: #333;
+      font-size: 0.75rem;
+      text-align: center;
+    }
+
+    footer a { color: #444; text-decoration: none; }
+    footer a:hover { color: #7c4dff; }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="logo">run<span>sh</span>.de</div>
+    <div class="tagline">Shell scripts, ready to run</div>
+  </div>
+
+  <div class="section-title">// available scripts</div>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon cyan">⚡</div>
+        <div class="card-name">init</div>
+      </div>
+      <div class="card-desc">New server bootstrap — mirrors, common tools, timezone setup.</div>
+      <div class="cmd" onclick="copyCmd(this)">
+        <span class="prompt">$</span>
+        <span class="cmd-text">curl -sL runsh.de/init.sh | bash</span>
+        <button class="copy-btn">copy</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon purple">🐳</div>
+        <div class="card-name">docker</div>
+      </div>
+      <div class="card-desc">Install Docker + Compose, add user to docker group.</div>
+      <div class="cmd" onclick="copyCmd(this)">
+        <span class="prompt">$</span>
+        <span class="cmd-text">curl -sL runsh.de/docker.sh | bash</span>
+        <button class="copy-btn">copy</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon green">🐚</div>
+        <div class="card-name">zsh</div>
+      </div>
+      <div class="card-desc">Install zsh + oh-my-zsh with sensible defaults.</div>
+      <div class="cmd" onclick="copyCmd(this)">
+        <span class="prompt">$</span>
+        <span class="cmd-text">curl -sL runsh.de/zsh.sh | bash</span>
+        <button class="copy-btn">copy</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon orange">🔒</div>
+        <div class="card-name">ssh-harden</div>
+      </div>
+      <div class="card-desc">Disable root login, password auth, change default port.</div>
+      <div class="cmd" onclick="copyCmd(this)">
+        <span class="prompt">$</span>
+        <span class="cmd-text">curl -sL runsh.de/ssh-harden.sh | bash</span>
+        <button class="copy-btn">copy</button>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <a href="https://github.com/upupbl/runsh" target="_blank">github.com/upupbl/runsh</a>
+    &nbsp;·&nbsp; use at your own risk &nbsp;·&nbsp; always read before piping to bash
+  </footer>
+
+  <script>
+    function copyCmd(el) {
+      const text = el.querySelector('.cmd-text').textContent.trim();
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = el.querySelector('.copy-btn');
+        btn.textContent = 'ok!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
+      });
+    }
+  </script>
+
+</body>
+</html>
